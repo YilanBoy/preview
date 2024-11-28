@@ -1,0 +1,26 @@
+{
+  "name": "yilanboy/preview",
+  "description": "Generate the preview image",
+  "type": "library",
+  "keywords": [
+    "preview",
+    "image"
+  ],
+  "require": {
+    "php": "^8.0",
+    "ext-gd": "*"
+  },
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Yilanboy\\Preview\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "allenjiang",
+      "email": "allenjianggo@yahoo.com"
+    }
+  ],
+  "minimum-stability": "dev"
+}
