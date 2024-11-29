@@ -10,11 +10,21 @@ class Generator
 
     public int $fontSize = 100;
 
-    public string $text = '你好！';
+    public string $fontPath;
+
+    public string $text = 'Hello World!';
 
     public string $backGroundHexColorCode = '#059669';
 
     public string $textHexColorCode = '#ffffff';
+
+    public Converter $converter;
+
+    public function __construct()
+    {
+        $this->converter = new Converter;
+        $this->fontPath = dirname(__FILE__).'/../fonts/noto-sans-tc.ttf';
+    }
 
     public function size(int $width, int $height): static
     {
@@ -23,7 +33,6 @@ class Generator
 
         return $this;
     }
-
 
     public function backGroundHexColorCode(string $backGroundHexColorCode): static
     {
@@ -35,6 +44,13 @@ class Generator
     public function textHexColorCode(string $textHexColorCode): static
     {
         $this->textHexColorCode = $textHexColorCode;
+
+        return $this;
+    }
+
+    public function fontPath(string $fontPath): static
+    {
+        $this->fontPath = $fontPath;
 
         return $this;
     }
@@ -53,24 +69,15 @@ class Generator
         return $this;
     }
 
-    public static function hexToRgb($hex): array
-    {
-        return sscanf($hex, '#%02x%02x%02x');
-    }
-
     public function output(): void
     {
         $image = imagecreatetruecolor($this->width, $this->height);
-
-        $backgroundColor = imagecolorallocate($image, ...$this->hexToRgb($this->backGroundHexColorCode));
-
+        $backgroundColor = imagecolorallocate($image, ...$this->converter->hexToRgb($this->backGroundHexColorCode));
         imagefill($image, 0, 0, $backgroundColor);
 
-        $textColor = imagecolorallocate($image, ...$this->hexToRgb($this->textHexColorCode));
+        $textColor = imagecolorallocate($image, ...$this->converter->hexToRgb($this->textHexColorCode));
 
-        $fontPath = dirname(__FILE__).'/../fonts/noto-sans-tc.ttf';
-
-        $bbox = imagettfbbox($this->fontSize, 0, $fontPath, $this->text);
+        $bbox = imagettfbbox($this->fontSize, 0, $this->fontPath, $this->text);
 
         $width = $bbox[2] - $bbox[0];
         $height = $bbox[1] - $bbox[5];
@@ -78,7 +85,7 @@ class Generator
         $x = (imagesx($image) - $width) / 2;
         $y = (imagesy($image) - $height) / 2 - $bbox[5];
 
-        imagettftext($image, $this->fontSize, 0, $x, $y, $textColor, $fontPath, $this->text);
+        imagettftext($image, $this->fontSize, 0, $x, $y, $textColor, $this->fontPath, $this->text);
 
         header('Content-Type: image/png');
 
