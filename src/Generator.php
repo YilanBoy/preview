@@ -2,27 +2,33 @@
 
 namespace Yilanboy\Preview;
 
+use GdImage;
+
 class Generator
 {
+    private const TEXT_MARGIN_RATIO = 0.05;
+
     public int $width = 1200;
 
     public int $height = 628;
 
-    public int $fontSize = 100;
+    public int $fontSize = 50;
 
     public string $fontPath;
 
-    public string $text = 'Hello World!';
+    public string $title = 'Hello World!';
 
-    public string $backGroundHexColorCode = '#059669';
+    public string $backGroundHexColorCode = '#f9fafb';
 
-    public string $textHexColorCode = '#ffffff';
+    public string $titleHexColorCode = '#030712';
 
     public Converter $converter;
 
+    public false|GdImage $image;
+
     public function __construct()
     {
-        $this->converter = new Converter;
+        $this->converter = new Converter();
         $this->fontPath = dirname(__FILE__).'/../fonts/noto-sans-tc.ttf';
     }
 
@@ -41,9 +47,9 @@ class Generator
         return $this;
     }
 
-    public function textHexColorCode(string $textHexColorCode): static
+    public function titleHexColorCode(string $titleHexColorCode): static
     {
-        $this->textHexColorCode = $textHexColorCode;
+        $this->titleHexColorCode = $titleHexColorCode;
 
         return $this;
     }
@@ -62,35 +68,71 @@ class Generator
         return $this;
     }
 
-    public function text(string $text): static
+    public function title(string $title): static
     {
-        $this->text = $text;
+        $this->title = $title;
 
         return $this;
     }
 
+    private function wrapTitle(string $title): string
+    {
+        if (empty($title)) {
+            return '';
+        }
+
+        $wrapTitle = '';
+        $length = mb_strlen($title);
+        // The maximum width should be minus both sides
+        $maxWidth = round($this->width * (1 - (self::TEXT_MARGIN_RATIO * 2)));
+
+        for ($i = 0; $i < $length; $i++) {
+            $currentChar = mb_substr($title, $i, 1, 'UTF-8');
+            $proposedText = $wrapTitle.$currentChar;
+
+            if ($this->calculateTextWidth($proposedText) < $maxWidth) {
+                $wrapTitle .= $currentChar;
+                continue;
+            }
+
+            $wrapTitle = trim($wrapTitle);
+            $wrapTitle .= PHP_EOL.$currentChar;
+        }
+
+        return $wrapTitle;
+    }
+
+    private function calculateTextWidth(string $text): int
+    {
+        $bbox = imagettfbbox(
+            size: $this->fontSize,
+            angle: 0,
+            font_filename: $this->fontPath,
+            string: $text
+        );
+
+        return $bbox[2] - $bbox[0];
+    }
+
     public function output(): void
     {
-        $image = imagecreatetruecolor($this->width, $this->height);
-        $backgroundColor = imagecolorallocate($image, ...$this->converter->hexToRgb($this->backGroundHexColorCode));
-        imagefill($image, 0, 0, $backgroundColor);
+        $this->image = imagecreatetruecolor($this->width, $this->height);
+        $backgroundColor = imagecolorallocate($this->image,
+            ...$this->converter->hexToRgb($this->backGroundHexColorCode));
+        imagefill($this->image, 0, 0, $backgroundColor);
 
-        $textColor = imagecolorallocate($image, ...$this->converter->hexToRgb($this->textHexColorCode));
+        $wrapTitle = $this->wrapTitle($this->title);
 
-        $bbox = imagettfbbox($this->fontSize, 0, $this->fontPath, $this->text);
+        $titleBbox = imagettfbbox($this->fontSize, 0, $this->fontPath, $wrapTitle);
+        $titleHeight = $titleBbox[1] - $titleBbox[5];
 
-        $width = $bbox[2] - $bbox[0];
-        $height = $bbox[1] - $bbox[5];
-
-        $x = (imagesx($image) - $width) / 2;
-        $y = (imagesy($image) - $height) / 2 - $bbox[5];
-
-        imagettftext($image, $this->fontSize, 0, $x, $y, $textColor, $this->fontPath, $this->text);
+        $x = round($this->width * self::TEXT_MARGIN_RATIO);
+        $y = (imagesy($this->image) - $titleHeight) / 2 - $titleBbox[5];
+        $titleColor = imagecolorallocate($this->image, ...$this->converter->hexToRgb($this->titleHexColorCode));
+        imagettftext($this->image, $this->fontSize, 0, $x, $y, $titleColor, $this->fontPath, $wrapTitle);
 
         header('Content-Type: image/png');
-
-        imagepng($image);
-
-        imagedestroy($image);
+        imagepng($this->image);
+        imagedestroy($this->image);
     }
 }
