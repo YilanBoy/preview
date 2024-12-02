@@ -18,9 +18,9 @@ class Generator
 
     public string $title = 'Hello World!';
 
-    public string $backGroundHexColorCode = '#f9fafb';
+    public string $imageBackgroundColor = '#f9fafb';
 
-    public string $titleHexColorCode = '#030712';
+    public string $titleColor = '#030712';
 
     public Converter $converter;
 
@@ -40,16 +40,16 @@ class Generator
         return $this;
     }
 
-    public function backGroundHexColorCode(string $backGroundHexColorCode): static
+    public function backgroundColor(string $backgroundColor): static
     {
-        $this->backGroundHexColorCode = $backGroundHexColorCode;
+        $this->imageBackgroundColor = $backgroundColor;
 
         return $this;
     }
 
-    public function titleHexColorCode(string $titleHexColorCode): static
+    public function titleColor(string $titleColor): static
     {
-        $this->titleHexColorCode = $titleHexColorCode;
+        $this->titleColor = $titleColor;
 
         return $this;
     }
@@ -118,7 +118,7 @@ class Generator
     {
         $this->image = imagecreatetruecolor($this->width, $this->height);
         $backgroundColor = imagecolorallocate($this->image,
-            ...$this->converter->hexToRgb($this->backGroundHexColorCode));
+            ...$this->converter->hexToRgb($this->imageBackgroundColor));
         imagefill($this->image, 0, 0, $backgroundColor);
 
         $wrapTitle = $this->wrapTitle($this->title);
@@ -127,8 +127,8 @@ class Generator
         $titleHeight = $titleBbox[1] - $titleBbox[5];
 
         $x = round($this->width * self::TEXT_MARGIN_RATIO);
-        $y = (imagesy($this->image) - $titleHeight) / 2 - $titleBbox[5];
-        $titleColor = imagecolorallocate($this->image, ...$this->converter->hexToRgb($this->titleHexColorCode));
+        $y = round((imagesy($this->image) - $titleHeight) / 2 - $titleBbox[5]);
+        $titleColor = imagecolorallocate($this->image, ...$this->converter->hexToRgb($this->titleColor));
         imagettftext($this->image, $this->fontSize, 0, $x, $y, $titleColor, $this->fontPath, $wrapTitle);
 
         header('Content-Type: image/png');
