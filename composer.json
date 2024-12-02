@@ -1,27 +1,39 @@
 {
-  "name": "yilanboy/preview",
-  "description": "Generate the preview image",
-  "type": "library",
-  "keywords": [
-    "preview",
-    "image"
-  ],
-  "require": {
-    "php": "^8.0",
-    "ext-gd": "*",
-      "ext-mbstring": "*"
-  },
-  "license": "MIT",
-  "autoload": {
-    "psr-4": {
-      "Yilanboy\\Preview\\": "src/"
-    }
-  },
-  "authors": [
-    {
-      "name": "allenjiang",
-      "email": "allenjianggo@yahoo.com"
-    }
-  ],
-  "minimum-stability": "dev"
+    "name": "yilanboy/preview",
+    "description": "Generate the preview image",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "allenjiang",
+            "email": "allenjianggo@yahoo.com"
+        }
+    ],
+    "scripts": {
+        "run-server": "php -S localhost:8000 server.php",
+        "run-tests": "./vendor/bin/pest"
+    },
+    "keywords": [
+        "preview",
+        "image"
+    ],
+    "require": {
+        "php": "^8.0",
+        "ext-gd": "*",
+        "ext-mbstring": "*"
+    },
+    "require-dev": {
+        "pestphp/pest": "^3.0.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Yilanboy\\Preview\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
 }

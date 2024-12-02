@@ -40,16 +40,24 @@ class Generator
         return $this;
     }
 
-    public function backgroundColor(string $backgroundColor): static
+    public function backgroundColor(string $color): static
     {
-        $this->imageBackgroundColor = $backgroundColor;
+        if ($color[0] !== '#') {
+            $color = $this->converter->nameToHex($color);
+        }
+
+        $this->imageBackgroundColor = $color;
 
         return $this;
     }
 
-    public function titleColor(string $titleColor): static
+    public function titleColor(string $color): static
     {
-        $this->titleColor = $titleColor;
+        if ($color[0] !== '#') {
+            $color = $this->converter->nameToHex($color);
+        }
+
+        $this->titleColor = $color;
 
         return $this;
     }
@@ -77,10 +85,6 @@ class Generator
 
     private function wrapTitle(string $title): string
     {
-        if (empty($title)) {
-            return '';
-        }
-
         $wrapTitle = '';
         $length = mb_strlen($title);
         // The maximum width should be minus both sides
