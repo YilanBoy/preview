@@ -22,6 +22,12 @@ it('can convert color name to hex', function () {
         ->and($converter->nameToHex('black'))->toBe('#000000');
 });
 
+it('will throw invalid argument exception, if color name is not correct', function () {
+    $converter = new Converter();
+
+    $converter->nameToHex('invalid');
+})->throws(InvalidArgumentException::class, 'Invalid color name');
+
 it('can check string is correct hex format', function () {
     $converter = new Converter();
 

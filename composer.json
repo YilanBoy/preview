@@ -10,7 +10,7 @@
         }
     ],
     "scripts": {
-        "run-server": "php -S localhost:8000 server.php",
+        "run-server": "php -S localhost:8000 -t public/",
         "run-tests": "./vendor/bin/pest"
     },
     "keywords": [
@@ -35,5 +35,6 @@
             "Yilanboy\\Preview\\": "src/"
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
