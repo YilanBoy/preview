@@ -7,6 +7,8 @@ use Yilanboy\Preview\ColorConverter;
 
 final class Builder
 {
+    private const DEFAULT_FONT_PATH = __DIR__.'/../../fonts/noto-sans-tc.ttf';
+
     private const MARGIN_RATIO = 0.05;
 
     public int $width = 1200;
@@ -15,14 +17,14 @@ final class Builder
 
     public array $header = [
         'text' => 'Preview',
-        'font_path' => __DIR__.'/../../fonts/noto-sans-tc.ttf',
+        'font_path' => self::DEFAULT_FONT_PATH,
         'font_size' => 75,
         'color' => '#030712',
     ];
 
     public array $title = [
         'text' => 'Hello World!',
-        'font_path' => __DIR__.'/../../fonts/noto-sans-tc.ttf',
+        'font_path' => self::DEFAULT_FONT_PATH,
         'font_size' => 50,
         'color' => '#030712',
     ];

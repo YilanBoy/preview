@@ -8,9 +8,6 @@ final class ColorConverter
 {
     /**
      * Check the string is color hex format
-     *
-     * @param  string  $color
-     * @return bool|int
      */
     public function isHexColor(string $color): bool|int
     {
@@ -19,9 +16,6 @@ final class ColorConverter
 
     /**
      * Convert color hex code to RGB
-     *
-     * @param  string  $hex
-     * @return array<int>
      */
     public function hexToRgb(string $hex): array
     {
@@ -34,9 +28,6 @@ final class ColorConverter
 
     /**
      * Convert color name to hex code
-     *
-     * @param  string  $word
-     * @return string
      */
     public static function nameToHex(string $word): string
     {
