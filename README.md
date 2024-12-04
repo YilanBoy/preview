@@ -7,16 +7,23 @@ use Yilanboy\Preview\Builder;
 
 (new Builder())
     ->size(width: 1200, height: 628)
-    ->backgroundColor('#10b981')
-    ->title(text: 'A true master is an eternal student', color: 'white')
+    ->backgroundColor('#777bb3')
+    ->header(text: 'Preview', color: 'white')
+    ->title(text: 'A simple PHP package to create preview image', color: 'white')
     ->output();
 ```
 
+This code will display the following image on the web page.
+
+![preview](images/preview.png)
+
 ## Start a Local Server to Show the Image
 
-There is a `server.php` file in repo root directory, you can simply start a local server to see the image in browser.
+There is a `index.php` file in `public` folder, you can simply start a local server to see the image in browser.
 
 ```bash
+php -S localhost:8000 -t public/
+# or
 composer run-server
 ```
 

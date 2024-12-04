@@ -19,8 +19,7 @@
     ],
     "require": {
         "php": "^8.0",
-        "ext-gd": "*",
-        "ext-mbstring": "*"
+        "ext-gd": "*"
     },
     "require-dev": {
         "pestphp/pest": "^3.0.0"

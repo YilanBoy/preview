@@ -12,6 +12,13 @@ class Builder
 
     public int $height = 628;
 
+    public array $header = [
+        'text' => 'Preview',
+        'font_path' => __DIR__.'/../fonts/noto-sans-tc.ttf',
+        'font_size' => 75,
+        'color' => '#030712',
+    ];
+
     public array $title = [
         'text' => 'Hello World!',
         'font_path' => __DIR__.'/../fonts/noto-sans-tc.ttf',
@@ -70,33 +77,62 @@ class Builder
         return $this;
     }
 
-    private function wrapText(
+    public function header(
+        string $text,
+        string $color = 'black',
+        int $fontSize = 75,
+        string $fontPath = __DIR__.'/../fonts/noto-sans-tc.ttf',
+    ): static {
+        $this->header['text'] = $text;
+
+        if ($color[0] !== '#') {
+            $this->header['color'] = $this->converter->nameToHex($color);
+        } else {
+            $this->header['color'] = $color;
+        }
+
+        $this->header['font_size'] = $fontSize;
+
+        $this->header['font_path'] = $fontPath;
+
+        return $this;
+    }
+
+    private function splitStringToArray($input): array
+    {
+        preg_match_all('/\p{Han}|[a-zA-Z0-9]+|\s|[^\p{Han}\s\w]/u', $input, $matches);
+
+        return $matches[0];
+    }
+
+    private function wrapTextImage(
         string $text,
         string $fontSize,
         string $fontPath
     ): string {
         $wrapText = '';
-        $length = mb_strlen($text);
+        $words = $this->splitStringToArray($text);
+        $length = count($words);
         // The maximum width should subtract the width of the border on both sides.
         $maxWidth = round($this->width * (1 - (self::TEXT_MARGIN_RATIO * 2)));
 
         for ($i = 0; $i < $length; $i++) {
-            $currentChar = mb_substr($text, $i, 1, 'UTF-8');
-            $proposedText = $wrapText.$currentChar;
+            $currentWord = $words[$i];
+            $proposedText = $wrapText.$currentWord;
 
-            if ($this->calculateTextWidth($proposedText, $fontSize, $fontPath) < $maxWidth) {
-                $wrapText .= $currentChar;
+            if ($this->calculateTextImageWidth($proposedText, $fontSize, $fontPath) < $maxWidth) {
+                $wrapText .= $currentWord;
                 continue;
             }
 
             $wrapText = trim($wrapText);
-            $wrapText .= PHP_EOL.$currentChar;
+            $wrapText .= PHP_EOL.$currentWord;
         }
 
         return $wrapText;
     }
 
-    private static function calculateTextWidth(
+    private static function calculateTextImageWidth(
         string $text,
         string $fontSize,
         string $fontPath
@@ -119,9 +155,37 @@ class Builder
         imagefill($this->image, 0, 0, $backgroundColor);
     }
 
+    private function configureHeader(): void
+    {
+        $wrapHeader = $this->wrapTextImage(
+            $this->header['text'], $this->header['font_size'], $this->header['font_path']);
+
+        $headerBbox = imagettfbbox(
+            $this->header['font_size'], 0, $this->header['font_path'], $wrapHeader);
+
+        $headerHeight = $headerBbox[1] - $headerBbox[5];
+
+        $x = round($this->width * self::TEXT_MARGIN_RATIO);
+        $y = round(imagesy($this->image) / 3 - $headerHeight / 2);
+
+        $headerColor = imagecolorallocate(
+            $this->image, ...$this->converter->hexToRgb($this->header['color']));
+
+        imagettftext(
+            image: $this->image,
+            size: $this->header['font_size'],
+            angle: 0,
+            x: $x,
+            y: $y,
+            color: $headerColor,
+            font_filename: $this->header['font_path'],
+            text: $wrapHeader
+        );
+    }
+
     private function configureTitle(): void
     {
-        $wrapTitle = $this->wrapText(
+        $wrapTitle = $this->wrapTextImage(
             $this->title['text'], $this->title['font_size'], $this->title['font_path']);
 
         $titleBbox = imagettfbbox(
@@ -150,6 +214,7 @@ class Builder
     public function output(): void
     {
         $this->configureCanvas();
+        $this->configureHeader();
         $this->configureTitle();
 
         header('Content-Type: image/png');
@@ -160,6 +225,7 @@ class Builder
     public function save(string $path): void
     {
         $this->configureCanvas();
+        $this->configureHeader();
         $this->configureTitle();
 
         imagepng($this->image, $path);

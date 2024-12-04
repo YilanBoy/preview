@@ -9,4 +9,4 @@ use Yilanboy\Preview\Builder;
     ->backgroundColor('#777bb3')
     ->header(text: 'Preview', color: 'white')
     ->title(text: 'A simple PHP package to create preview image', color: 'white')
-    ->output();
+    ->save('preview.png');
