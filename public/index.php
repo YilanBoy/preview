@@ -2,12 +2,10 @@
 
 include_once dirname(__FILE__).'/../vendor/autoload.php';
 
-use Yilanboy\Preview\Generator;
+use Yilanboy\Preview\Builder;
 
-(new Generator())
+(new Builder())
     ->size(width: 1200, height: 628)
     ->backgroundColor('#10b981')
-    ->titleColor('white')
-    ->fontSize(50)
-    ->title('A true master is an eternal student')
+    ->title(text: 'A true master is an eternal student', color: 'white')
     ->output();
