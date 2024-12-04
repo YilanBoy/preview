@@ -1,12 +1,13 @@
 <?php
 
-namespace Yilanboy\Preview;
+namespace Yilanboy\Preview\Images;
 
 use GdImage;
+use Yilanboy\Preview\ColorConverter;
 
-class Builder
+final class Builder
 {
-    private const TEXT_MARGIN_RATIO = 0.05;
+    private const MARGIN_RATIO = 0.05;
 
     public int $width = 1200;
 
@@ -14,30 +15,29 @@ class Builder
 
     public array $header = [
         'text' => 'Preview',
-        'font_path' => __DIR__.'/../fonts/noto-sans-tc.ttf',
+        'font_path' => __DIR__.'/../../fonts/noto-sans-tc.ttf',
         'font_size' => 75,
         'color' => '#030712',
     ];
 
     public array $title = [
         'text' => 'Hello World!',
-        'font_path' => __DIR__.'/../fonts/noto-sans-tc.ttf',
+        'font_path' => __DIR__.'/../../fonts/noto-sans-tc.ttf',
         'font_size' => 50,
         'color' => '#030712',
     ];
 
     public string $backgroundColor = '#f9fafb';
 
-    public Converter $converter;
-
     public false|GdImage $image;
 
-    public function __construct()
-    {
-        $this->converter = new Converter();
+    public function __construct(
+        public ColorConverter $converter = new ColorConverter(),
+        public TextHandler $handler = new TextHandler()
+    ) {
     }
 
-    public function size(int $width, int $height): static
+    public function size(int $width, int $height): Builder
     {
         $this->width = $width;
         $this->height = $height;
@@ -45,7 +45,7 @@ class Builder
         return $this;
     }
 
-    public function backgroundColor(string $color): static
+    public function backgroundColor(string $color): Builder
     {
         if ($color[0] !== '#') {
             $color = $this->converter->nameToHex($color);
@@ -58,93 +58,56 @@ class Builder
 
     public function title(
         string $text,
-        string $color = 'black',
-        int $fontSize = 50,
-        string $fontPath = __DIR__.'/../fonts/noto-sans-tc.ttf',
-    ): static {
+        ?string $color = null,
+        ?int $fontSize = null,
+        ?string $fontPath = null,
+    ): Builder {
         $this->title['text'] = $text;
 
-        if ($color[0] !== '#') {
-            $this->title['color'] = $this->converter->nameToHex($color);
-        } else {
-            $this->title['color'] = $color;
+        if (! is_null($color)) {
+            if ($color[0] !== '#') {
+                $this->title['color'] = $this->converter->nameToHex($color);
+            } else {
+                $this->title['color'] = $color;
+            }
         }
 
-        $this->title['font_size'] = $fontSize;
+        if (! is_null($fontSize)) {
+            $this->title['font_size'] = $fontSize;
+        }
 
-        $this->title['font_path'] = $fontPath;
+        if (! is_null($fontPath)) {
+            $this->title['font_path'] = $fontPath;
+        }
 
         return $this;
     }
 
     public function header(
         string $text,
-        string $color = 'black',
-        int $fontSize = 75,
-        string $fontPath = __DIR__.'/../fonts/noto-sans-tc.ttf',
-    ): static {
+        ?string $color = null,
+        ?int $fontSize = null,
+        ?string $fontPath = null,
+    ): Builder {
         $this->header['text'] = $text;
 
-        if ($color[0] !== '#') {
-            $this->header['color'] = $this->converter->nameToHex($color);
-        } else {
-            $this->header['color'] = $color;
+        if (! is_null($color)) {
+            if ($color[0] !== '#') {
+                $this->header['color'] = $this->converter->nameToHex($color);
+            } else {
+                $this->header['color'] = $color;
+            }
         }
 
-        $this->header['font_size'] = $fontSize;
+        if (! is_null($fontSize)) {
+            $this->header['font_size'] = $fontSize;
+        }
 
-        $this->header['font_path'] = $fontPath;
+        if (! is_null($fontPath)) {
+            $this->header['font_path'] = $fontPath;
+        }
 
         return $this;
-    }
-
-    private function splitStringToArray($input): array
-    {
-        preg_match_all('/\p{Han}|[a-zA-Z0-9]+|\s|[^\p{Han}\s\w]/u', $input, $matches);
-
-        return $matches[0];
-    }
-
-    private function wrapTextImage(
-        string $text,
-        string $fontSize,
-        string $fontPath
-    ): string {
-        $wrapText = '';
-        $words = $this->splitStringToArray($text);
-        $length = count($words);
-        // The maximum width should subtract the width of the border on both sides.
-        $maxWidth = round($this->width * (1 - (self::TEXT_MARGIN_RATIO * 2)));
-
-        for ($i = 0; $i < $length; $i++) {
-            $currentWord = $words[$i];
-            $proposedText = $wrapText.$currentWord;
-
-            if ($this->calculateTextImageWidth($proposedText, $fontSize, $fontPath) < $maxWidth) {
-                $wrapText .= $currentWord;
-                continue;
-            }
-
-            $wrapText = trim($wrapText);
-            $wrapText .= PHP_EOL.$currentWord;
-        }
-
-        return $wrapText;
-    }
-
-    private static function calculateTextImageWidth(
-        string $text,
-        string $fontSize,
-        string $fontPath
-    ): int {
-        $bbox = imagettfbbox(
-            size: $fontSize,
-            angle: 0,
-            font_filename: $fontPath,
-            string: $text
-        );
-
-        return $bbox[2] - $bbox[0];
     }
 
     private function configureCanvas(): void
@@ -157,15 +120,20 @@ class Builder
 
     private function configureHeader(): void
     {
-        $wrapHeader = $this->wrapTextImage(
-            $this->header['text'], $this->header['font_size'], $this->header['font_path']);
+        $wrapHeader = $this->handler->wrapTextImage(
+            text: $this->header['text'],
+            fontSize: $this->header['font_size'],
+            fontPath: $this->header['font_path'],
+            // The maximum width should subtract the width of the border on both sides.
+            maxWidth: $this->width - $this->width * self::MARGIN_RATIO * 2
+        );
 
         $headerBbox = imagettfbbox(
             $this->header['font_size'], 0, $this->header['font_path'], $wrapHeader);
 
         $headerHeight = $headerBbox[1] - $headerBbox[5];
 
-        $x = round($this->width * self::TEXT_MARGIN_RATIO);
+        $x = round($this->width * self::MARGIN_RATIO);
         $y = round(imagesy($this->image) / 3 - $headerHeight / 2);
 
         $headerColor = imagecolorallocate(
@@ -185,15 +153,19 @@ class Builder
 
     private function configureTitle(): void
     {
-        $wrapTitle = $this->wrapTextImage(
-            $this->title['text'], $this->title['font_size'], $this->title['font_path']);
+        $wrapTitle = $this->handler->wrapTextImage(
+            text: $this->title['text'],
+            fontSize: $this->title['font_size'],
+            fontPath: $this->title['font_path'],
+            maxWidth: $this->width - $this->width * self::MARGIN_RATIO * 2
+        );
 
         $titleBbox = imagettfbbox(
             $this->title['font_size'], 0, $this->title['font_path'], $wrapTitle);
 
         $titleHeight = $titleBbox[1] - $titleBbox[5];
 
-        $x = round($this->width * self::TEXT_MARGIN_RATIO);
+        $x = round($this->width * self::MARGIN_RATIO);
         $y = round((imagesy($this->image) - $titleHeight) / 2 - $titleBbox[5]);
 
         $titleColor = imagecolorallocate(

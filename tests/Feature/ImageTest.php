@@ -1,13 +1,6 @@
 <?php
 
-use Yilanboy\Preview\Builder;
-
-it('can output image', function () {
-    $headers = get_headers('http://localhost:8000/', true);
-
-    expect($headers[0])->toBe('HTTP/1.1 200 OK')
-        ->and($headers['Content-Type'])->toBe('image/png');
-});
+use Yilanboy\Preview\Images\Builder;
 
 it('can save image', function () {
     $filename = 'test.png';

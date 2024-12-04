@@ -10,7 +10,6 @@
         }
     ],
     "scripts": {
-        "run-server": "php -S localhost:8000 -t public/",
         "run-tests": "./vendor/bin/pest"
     },
     "keywords": [
@@ -18,7 +17,7 @@
         "image"
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "ext-gd": "*"
     },
     "require-dev": {

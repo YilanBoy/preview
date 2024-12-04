@@ -4,7 +4,7 @@ namespace Yilanboy\Preview;
 
 use InvalidArgumentException;
 
-class Converter
+final class ColorConverter
 {
     /**
      * Check the string is color hex format

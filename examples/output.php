@@ -2,7 +2,7 @@
 
 include_once __DIR__.'/../vendor/autoload.php';
 
-use Yilanboy\Preview\Builder;
+use Yilanboy\Preview\Images\Builder;
 
 (new Builder())
     ->size(width: 1200, height: 628)

@@ -3,7 +3,7 @@
 A simple package to generate preview image.
 
 ```php
-use Yilanboy\Preview\Builder;
+use Yilanboy\Preview\Images\Builder;
 
 (new Builder())
     ->size(width: 1200, height: 628)
@@ -19,12 +19,10 @@ This code will display the following image on the web page.
 
 ## Start a Local Server to Show the Image
 
-There is a `index.php` file in `public` folder, you can simply start a local server to see the image in browser.
+There is a `output.php` file in `examples` folder, you can simply start a local server to see the image in browser.
 
 ```bash
-php -S localhost:8000 -t public/
-# or
-composer run-server
+php -S localhost:8000 examples/output.php
 ```
 
 Then open your browser and visit [localhost:8000](http://localhost:8000).
