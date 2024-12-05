@@ -1,9 +1,16 @@
 <?php
 
-namespace Yilanboy\Preview\Images;
+namespace Yilanboy\Preview\Image;
 
-final class TextHandler
+final class Writer
 {
+    /**
+     * Splits the string into words.
+     * This method will split English into words,
+     * and Chinese and special symbols into characters.
+     *
+     * @return array<string>
+     */
     public static function splitStringToArray($input): array
     {
         preg_match_all('/\p{Han}|[a-zA-Z0-9]+|\s|[^\p{Han}\s\w]/u', $input, $matches);
@@ -11,9 +18,12 @@ final class TextHandler
         return $matches[0];
     }
 
+    /**
+     * Calculate the width of the text image.
+     */
     public static function calculateTextImageWidth(
         string $text,
-        string $fontSize,
+        int $fontSize,
         string $fontPath
     ): int {
         $bbox = imagettfbbox(
@@ -26,6 +36,9 @@ final class TextHandler
         return $bbox[2] - $bbox[0];
     }
 
+    /**
+     * Wrap the text to multiple lines based on the maximum width.
+     */
     public function wrapTextImage(
         string $text,
         int $fontSize,
@@ -51,5 +64,4 @@ final class TextHandler
 
         return $wrapText;
     }
-
 }

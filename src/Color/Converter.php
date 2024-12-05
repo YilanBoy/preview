@@ -1,10 +1,10 @@
 <?php
 
-namespace Yilanboy\Preview;
+namespace Yilanboy\Preview\Color;
 
 use InvalidArgumentException;
 
-final class ColorConverter
+final class Converter
 {
     /**
      * Check the string is color hex format

@@ -1,6 +1,6 @@
 <?php
 
-use Yilanboy\Preview\Images\Builder;
+use Yilanboy\Preview\Image\Builder;
 
 it('can save image', function () {
     $filename = 'test.png';

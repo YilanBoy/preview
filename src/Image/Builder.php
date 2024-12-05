@@ -1,9 +1,9 @@
 <?php
 
-namespace Yilanboy\Preview\Images;
+namespace Yilanboy\Preview\Image;
 
 use GdImage;
-use Yilanboy\Preview\ColorConverter;
+use Yilanboy\Preview\Color\Converter;
 
 final class Builder
 {
@@ -34,8 +34,8 @@ final class Builder
     public false|GdImage $image;
 
     public function __construct(
-        public ColorConverter $converter = new ColorConverter(),
-        public TextHandler $handler = new TextHandler()
+        public Converter $converter = new Converter(),
+        public Writer $writer = new Writer()
     ) {
     }
 
@@ -49,11 +49,11 @@ final class Builder
 
     public function backgroundColor(string $color): Builder
     {
-        if ($color[0] !== '#') {
-            $color = $this->converter->nameToHex($color);
+        if ($this->converter->isHexColor($color)) {
+            $this->backgroundColor = $color;
+        } else {
+            $this->backgroundColor = $this->converter->nameToHex($color);
         }
-
-        $this->backgroundColor = $color;
 
         return $this;
     }
@@ -122,7 +122,7 @@ final class Builder
 
     private function configureHeader(): void
     {
-        $wrapHeader = $this->handler->wrapTextImage(
+        $wrapHeader = $this->writer->wrapTextImage(
             text: $this->header['text'],
             fontSize: $this->header['font_size'],
             fontPath: $this->header['font_path'],
@@ -155,7 +155,7 @@ final class Builder
 
     private function configureTitle(): void
     {
-        $wrapTitle = $this->handler->wrapTextImage(
+        $wrapTitle = $this->writer->wrapTextImage(
             text: $this->title['text'],
             fontSize: $this->title['font_size'],
             fontPath: $this->title['font_path'],

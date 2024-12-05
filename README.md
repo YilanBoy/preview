@@ -3,7 +3,7 @@
 A simple package to generate preview image.
 
 ```php
-use Yilanboy\Preview\Images\Builder;
+use Yilanboy\Preview\Image\Builder;
 
 (new Builder())
     ->size(width: 1200, height: 628)
