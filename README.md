@@ -2,6 +2,16 @@
 
 A simple package to generate preview image.
 
+## Installation
+
+Install the package with composer.
+
+```bash
+composer require yilanboy/preview
+```
+
+Then create an image builder.
+
 ```php
 use Yilanboy\Preview\Image\Builder;
 
@@ -18,7 +28,7 @@ This code will display the following image on the web page.
 ![preview](images/preview.png)
 
 You can modify the text on the preview image.
-****
+
 > Currently, the text only support english and chinese.
 
 ## Start a Local Server to Show the Image
