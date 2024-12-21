@@ -6,7 +6,7 @@ A simple package to generate preview image.
 use Yilanboy\Preview\Image\Builder;
 
 (new Builder())
-    ->size(width: 1200, height: 628)
+    ->size(width: 1200, height: 600)
     ->backgroundColor('#777bb3')
     ->header(text: 'Preview', color: 'white')
     ->title(text: 'A simple PHP package to create preview image', color: 'white')
@@ -16,6 +16,10 @@ use Yilanboy\Preview\Image\Builder;
 This code will display the following image on the web page.
 
 ![preview](images/preview.png)
+
+You can modify the text on the preview image.
+****
+> Currently, the text only support english and chinese.
 
 ## Start a Local Server to Show the Image
 
@@ -29,9 +33,6 @@ Then open your browser and visit [localhost:8000](http://localhost:8000).
 
 ## Run Tests
 
-Before running the test, please start the local web server.
-
 ```bash
-composer run-server
 composer run-tests
 ```

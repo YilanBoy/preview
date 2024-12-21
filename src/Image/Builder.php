@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Yilanboy\Preview\Image;
 
 use GdImage;
@@ -13,7 +15,7 @@ final class Builder
 
     public int $width = 1200;
 
-    public int $height = 628;
+    public int $height = 600;
 
     public array $header = [
         'text' => 'Preview',
@@ -127,7 +129,7 @@ final class Builder
             fontSize: $this->header['font_size'],
             fontPath: $this->header['font_path'],
             // The maximum width should subtract the width of the border on both sides.
-            maxWidth: $this->width - $this->width * self::MARGIN_RATIO * 2
+            maxWidth: intval($this->width - $this->width * self::MARGIN_RATIO * 2)
         );
 
         $headerBbox = imagettfbbox(
@@ -135,8 +137,8 @@ final class Builder
 
         $headerHeight = $headerBbox[1] - $headerBbox[5];
 
-        $x = round($this->width * self::MARGIN_RATIO);
-        $y = round(imagesy($this->image) / 3 - $headerHeight / 2);
+        $x = intval($this->width * self::MARGIN_RATIO);
+        $y = intval(imagesy($this->image) / 3 - $headerHeight / 2);
 
         $headerColor = imagecolorallocate(
             $this->image, ...$this->converter->hexToRgb($this->header['color']));
@@ -159,7 +161,7 @@ final class Builder
             text: $this->title['text'],
             fontSize: $this->title['font_size'],
             fontPath: $this->title['font_path'],
-            maxWidth: $this->width - $this->width * self::MARGIN_RATIO * 2
+            maxWidth: intval($this->width - $this->width * self::MARGIN_RATIO * 2)
         );
 
         $titleBbox = imagettfbbox(
@@ -167,8 +169,8 @@ final class Builder
 
         $titleHeight = $titleBbox[1] - $titleBbox[5];
 
-        $x = round($this->width * self::MARGIN_RATIO);
-        $y = round((imagesy($this->image) - $titleHeight) / 2 - $titleBbox[5]);
+        $x = intval($this->width * self::MARGIN_RATIO);
+        $y = intval((imagesy($this->image) - $titleHeight) / 2 - $titleBbox[5]);
 
         $titleColor = imagecolorallocate(
             $this->image, ...$this->converter->hexToRgb($this->title['color']));
