@@ -18,14 +18,14 @@ final class Builder
     public int $height = 600;
 
     public array $header = [
-        'text' => 'Preview',
+        'text' => '',
         'font_path' => self::DEFAULT_FONT_PATH,
-        'font_size' => 75,
+        'font_size' => 50,
         'color' => '#030712',
     ];
 
     public array $title = [
-        'text' => 'Hello World!',
+        'text' => '',
         'font_path' => self::DEFAULT_FONT_PATH,
         'font_size' => 50,
         'color' => '#030712',
